@@ -1,53 +1,98 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
-	import { onMount } from 'svelte';
-	import type { Task, TaskSection } from '../../types';
-  import { STORAGE_TASK_KEY } from '../../types';
-	import TodoItem from './todoItem.svelte';
+	import type { TaskSection } from '../../types';
+	import { marked } from 'marked';
 
-  interface TodoSectionProps {
-    section: TaskSection;
-  }
+	interface TodoSectionProps {
+		section: TaskSection;
+	}
 
-  let { section }: TodoSectionProps = $props();
+	let { section }: TodoSectionProps = $props();
+  let titleEditing = $state(false);
+	let contentEditing = $state(false);
 
-  let taskSection = $state(section);
+	let textarea: HTMLElement;
 
-  function removeSubtask(actionToRemove: string) {
-    const newTasks = taskSection.tasks.filter(t => {
-      // console.log(t, t.action !== actionToRemove);
-      return t.action !== actionToRemove;
-    });
-    // console.log(newTasks);
+	function onkeydown(event: KeyboardEvent) {
+		if (event.key == 'Tab') {
+			event.preventDefault();
+			section.content += '   ';
+		}
 
-    taskSection.tasks = newTasks
-  }
+		if (event.ctrlKey && event.key == 'Enter') {
+			event.preventDefault();
+			contentEditing = false;
+		}
+	}
 
-  $inspect(taskSection)
+	function onblur() {
+		contentEditing = false;
+	}
+
+	function onDivClick() {
+    // console.log(textarea.focus)
+		contentEditing = true;
+		// textarea.focus();
+	}
+
+  // Focus textarea in an effect, since it technically doesn't exist until after onDivClick() finishes
+  $effect(() => {
+    if (contentEditing) {
+      textarea.focus();
+    }
+  })
 </script>
 
 <div class="todo-list">
-  <h3>{section.sectionName}</h3>
-	{#each section.tasks as task}
-    <!-- {console.info(task)} -->
-		<TodoItem item={task} removeSubtask={removeSubtask} />
-	{/each}
+  {#if titleEditing}
+    <input bind:value={section.sectionName} />
+  {:else}
+    <h3>{section.sectionName}</h3>
+  {/if}
+	<!-- <button onclick={() => { editing = !editing }}>switch</button> -->
+  {#if contentEditing}
+    <textarea bind:this={textarea} bind:value={section.content} {onkeydown} {onblur}
+      style:display={contentEditing ? "block" : "none"}
+    ></textarea>
+	{:else}
+		<div class="todo-content" onclick={onDivClick}>{@html marked(section.content)}</div>
+	{/if}
 </div>
 
 <style>
-  .todo-list {
-    width: 40%;
+	.todo-list {
+		width: 35%;
+		min-height: 300px;
+		padding: 10px;
+
+		border: 1px solid blue;
+		border-radius: 10px;
+
+		font-size: 0.8rem;
+
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	h3 {
+		text-align: center;
+	}
+
+	.todo-content {
+		text-align: left;
+
+		min-height: 200px;
+		width: 90%;
     padding: 10px;
 
-    border: 1px solid blue;
-    border-radius: 10px;
+		background-color: #242424;
+		border-radius: 25px;
+	}
 
-    font-size: 0.8rem;
-  }
-
-
-
-
-
-  
+	textarea {
+		width: 90%;
+		min-height: 200px;
+		margin: 10px;
+		resize: vertical;
+	}
 </style>

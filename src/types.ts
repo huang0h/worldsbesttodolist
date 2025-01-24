@@ -5,7 +5,8 @@ export interface Task {
 
 export interface TaskSection {
   sectionName: string;
-  tasks: Task[];
+  // tasks: Task[];
+  content: string;
 }
 
 export const STORAGE_TASK_KEY = 'tasks';

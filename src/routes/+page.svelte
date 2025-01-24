@@ -36,7 +36,7 @@
 
   $effect(() => {
     localStorage.setItem(STORAGE_TASK_KEY, JSON.stringify(sections));
-    console.log(localStorage.getItem(STORAGE_TASK_KEY));
+    // console.log(localStorage.getItem(STORAGE_TASK_KEY));
   });
 
   // $inspect(sections);
@@ -46,9 +46,13 @@
 <div class="main">
 	<Clock />
 	<br />
-  {#each sections as section}
-    <TodoSection section={section} />
-  {/each}
+  <button class="add-section">+</button>
+  <br />
+  <div class="sections">
+    {#each sections as section}
+      <TodoSection section={section} />
+    {/each}
+  </div>
 </div>
 
 <style>
@@ -67,4 +71,13 @@
 
 		color: white;
 	}
+
+  .sections {
+    margin-top: 20px;
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
 </style>
