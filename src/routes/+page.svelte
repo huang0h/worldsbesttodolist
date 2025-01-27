@@ -84,6 +84,6 @@
     justify-content: center;
 
     gap: 30px;
-    overflow-x: scroll;
+    overflow-x: auto;
   }
 </style>
