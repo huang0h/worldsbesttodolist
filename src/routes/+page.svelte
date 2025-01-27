@@ -12,45 +12,33 @@
   // wait for execution to occur on the browser
   onMount(() => {
     sections = JSON.parse(localStorage.getItem(STORAGE_TASK_KEY) || '[]');
-  //   sections = [
-  //     {
-  //       sectionName: 'section 1',
-  //       tasks: [
-  //         {
-  //           action: 'something hard',
-  //           subtasks: [
-  //             {
-  //               action: 'something easy',
-  //               subtasks: []
-  //             }
-  //           ]
-  //         },
-  //         {
-  //           action: 'something medium',
-  //           subtasks: []
-  //         }
-  //       ]
-  //     }
-  //   ]
   });
 
   $effect(() => {
     localStorage.setItem(STORAGE_TASK_KEY, JSON.stringify(sections));
     // console.log(localStorage.getItem(STORAGE_TASK_KEY));
   });
+  
+  function addSection() {
+    sections.push({ sectionName: `Section ${sections.length + 1}`, content: '', borderColor: "#FFFFFF" });
+  }
 
-  // $inspect(sections);
+  function removeSection(index: number) { 
+    return () => {
+      sections.splice(index, 1);
+    }
+  }
 
 </script>
 
 <div class="main">
 	<Clock />
 	<br />
-  <button class="add-section">+</button>
+  <button class="add-section" onclick={addSection}>+ Section</button>
   <br />
   <div class="sections">
-    {#each sections as section}
-      <TodoSection section={section} />
+    {#each sections as section, index}
+      <TodoSection section={section} removeSelf={removeSection(index)} />
     {/each}
   </div>
 </div>
@@ -72,12 +60,30 @@
 		color: white;
 	}
 
+  .add-section {
+    margin-top: 15px;
+    background: none;
+
+    color: white;
+    border: 2px solid white;
+    border-radius: 10px;
+    padding: 5px 10px;
+    box-shadow: 0 0 10px white;
+  }
+
+  .add-section:hover {
+    background-color: #dbc5c533;
+  }
+
   .sections {
     margin-top: 20px;
-    width: 100%;
+    width: 90%;
 
     display: flex;
     flex-direction: row;
     justify-content: center;
+
+    gap: 30px;
+    overflow-x: scroll;
   }
 </style>

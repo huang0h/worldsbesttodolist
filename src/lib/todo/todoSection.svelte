@@ -4,15 +4,19 @@
 
 	interface TodoSectionProps {
 		section: TaskSection;
+    removeSelf: () => void;
 	}
 
-	let { section }: TodoSectionProps = $props();
+	let { section, removeSelf }: TodoSectionProps = $props();
   let titleEditing = $state(false);
 	let contentEditing = $state(false);
 
-	let textarea: HTMLElement;
+	let textarea: HTMLElement | undefined = $state();
+  let title: HTMLElement | undefined = $state();
 
-	function onkeydown(event: KeyboardEvent) {
+  // let color = $state();
+
+	function textareaOnKeyDown(event: KeyboardEvent) {
 		if (event.key == 'Tab') {
 			event.preventDefault();
 			section.content += '   ';
@@ -24,33 +28,51 @@
 		}
 	}
 
-	function onblur() {
+	function textareaOnBlur() {
 		contentEditing = false;
 	}
 
+  function titleOnKeyDown(event: KeyboardEvent) {
+    if (event.ctrlKey && event.key == 'Enter') {
+			event.preventDefault();
+			titleEditing = false;
+		}
+  }
+
+  function titleOnBlur() {
+    titleEditing = false;
+  }
+
 	function onDivClick() {
-    // console.log(textarea.focus)
-		contentEditing = true;
-		// textarea.focus();
+    contentEditing = true;
 	}
 
   // Focus textarea in an effect, since it technically doesn't exist until after onDivClick() finishes
   $effect(() => {
-    if (contentEditing) {
+    if (contentEditing && textarea) {
       textarea.focus();
+    }
+
+    if (titleEditing && title) {
+      title.focus();
     }
   })
 </script>
 
-<div class="todo-list">
-  {#if titleEditing}
-    <input bind:value={section.sectionName} />
-  {:else}
-    <h3>{section.sectionName}</h3>
-  {/if}
-	<!-- <button onclick={() => { editing = !editing }}>switch</button> -->
-  {#if contentEditing}
-    <textarea bind:this={textarea} bind:value={section.content} {onkeydown} {onblur}
+<div class="todo-list" style="--coloring: {section.borderColor}">
+  <div class="header">
+    {#if titleEditing}
+      <input bind:this={title} bind:value={section.sectionName} onkeydown={titleOnKeyDown} onblur={titleOnBlur} />
+    {:else}
+      <h3 onclick={() => { titleEditing = true; }}>{section.sectionName}</h3>
+    {/if}
+    <span class="extras">
+      <input bind:value={section.borderColor} type="color" />
+      <button class="remove-section" onclick={removeSelf}>X</button>
+    </span>
+  </div>
+	{#if contentEditing}
+    <textarea bind:this={textarea} bind:value={section.content} onkeydown={textareaOnKeyDown} onblur={textareaOnBlur}
       style:display={contentEditing ? "block" : "none"}
     ></textarea>
 	{:else}
@@ -60,30 +82,61 @@
 
 <style>
 	.todo-list {
-		width: 35%;
-		min-height: 300px;
+		width: 25%;
+		min-height: 400px;
 		padding: 10px;
 
-		border: 1px solid blue;
+		border: 2px solid var(--coloring);
 		border-radius: 10px;
-
-		font-size: 0.8rem;
+    box-shadow: 0 0 25px var(--coloring);
+  
+		font-size: 1rem;
 
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+
+    flex-shrink: 0;
 	}
+
+  .header {
+    width: 95%;
+    margin-bottom: 10px;
+  }
+
+  span.extras {
+    float: right;
+    display: inline;
+  }
+
+  button.remove-section {
+    background: none;
+    border: 1px solid red;
+    border-radius: 5px;
+    color: red;
+
+    margin-left: 10px;
+  }
+
+  button.remove-section:hover {
+    background-color: #ff6e6e7a;
+  }
 
 	h3 {
 		text-align: center;
+    margin-top: 0px;
+    display: inline;
+    
+    margin-left: 20px;
 	}
 
 	.todo-content {
 		text-align: left;
 
-		min-height: 200px;
+		min-height: 350px;
 		width: 90%;
     padding: 10px;
+    margin-bottom: 10px;
 
 		background-color: #242424;
 		border-radius: 25px;
@@ -91,8 +144,14 @@
 
 	textarea {
 		width: 90%;
-		min-height: 200px;
+		min-height: 350px;
 		margin: 10px;
 		resize: vertical;
+
+    margin-bottom: 20px;
 	}
+
+  input {
+    margin-bottom: 5px;
+  }
 </style>
