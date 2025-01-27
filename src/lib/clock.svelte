@@ -58,7 +58,7 @@
 			0 0 14px var(--lightteal),
 			0 0 18px #ffffff60;
 
-		margin-top: 30px;
+		margin-top: 10px;
 	}
 
   div > p {

@@ -38,7 +38,7 @@
   <br />
   <div class="sections">
     {#each sections as section, index}
-      <TodoSection section={section} removeSelf={removeSection(index)} />
+      <TodoSection section={section} removeSelf={removeSection(index)} {index} />
     {/each}
   </div>
 </div>
@@ -76,7 +76,6 @@
   }
 
   .sections {
-    margin-top: 20px;
     width: 90%;
 
     display: flex;

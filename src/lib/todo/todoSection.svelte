@@ -5,9 +5,10 @@
 	interface TodoSectionProps {
 		section: TaskSection;
     removeSelf: () => void;
+    index: number;
 	}
 
-	let { section, removeSelf }: TodoSectionProps = $props();
+	let { section, removeSelf, index }: TodoSectionProps = $props();
   let titleEditing = $state(false);
 	let contentEditing = $state(false);
 
@@ -57,7 +58,15 @@
       title.focus();
     }
   })
+
+  function windowSelectSection(event: KeyboardEvent) {
+    if (event.altKey && parseInt(event.key) === index + 1) {
+      contentEditing = true;
+    } 
+  } 
 </script>
+
+<svelte:window onkeydown={windowSelectSection} />
 
 <div class="todo-list" style="--coloring: {section.borderColor}">
   <div class="header">
@@ -83,12 +92,13 @@
 <style>
 	.todo-list {
 		width: 25%;
-		min-height: 400px;
+		min-height: 380px;
 		padding: 10px;
+    margin: 25px 0;
 
 		border: 2px solid var(--coloring);
 		border-radius: 10px;
-    box-shadow: 0 0 25px var(--coloring);
+    box-shadow: 0 0 15px var(--coloring);
   
 		font-size: 1rem;
 
