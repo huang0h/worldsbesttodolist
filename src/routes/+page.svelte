@@ -1,46 +1,48 @@
 <script lang="ts">
 	import Clock from '$lib/clock.svelte';
-  import Todo from '$lib/todo/todoSection.svelte';
 	import { onMount } from 'svelte';
 	import type { TaskSection } from '../types';
 	import { STORAGE_TASK_KEY } from '../types';
 	import TodoSection from '$lib/todo/todoSection.svelte';
 
-  let sections: TaskSection[] = $state([]);
+	let sections: TaskSection[] = $state([]);
 
-  // Set task state on mount, since localStorage doesn't exist in the server:
-  // wait for execution to occur on the browser
-  onMount(() => {
-    sections = JSON.parse(localStorage.getItem(STORAGE_TASK_KEY) || '[]');
-  });
+	// Set task state on mount, since localStorage doesn't exist in the server:
+	// wait for execution to occur on the browser
+	onMount(() => {
+		sections = JSON.parse(localStorage.getItem(STORAGE_TASK_KEY) || '[]');
+	});
 
-  $effect(() => {
-    localStorage.setItem(STORAGE_TASK_KEY, JSON.stringify(sections));
-    // console.log(localStorage.getItem(STORAGE_TASK_KEY));
-  });
-  
-  function addSection() {
-    sections.push({ sectionName: `Section ${sections.length + 1}`, content: '', borderColor: "#FFFFFF" });
-  }
+	$effect(() => {
+		localStorage.setItem(STORAGE_TASK_KEY, JSON.stringify(sections));
+		// console.log(localStorage.getItem(STORAGE_TASK_KEY));
+	});
 
-  function removeSection(index: number) { 
-    return () => {
-      sections.splice(index, 1);
-    }
-  }
+	function addSection() {
+		sections.push({
+			sectionName: `Section ${sections.length + 1}`,
+			content: '',
+			borderColor: '#FFFFFF'
+		});
+	}
 
+	function removeSection(index: number) {
+		return () => {
+			sections.splice(index, 1);
+		};
+	}
 </script>
 
 <div class="main">
 	<Clock />
 	<br />
-  <button class="add-section" onclick={addSection}>+ Section</button>
-  <br />
-  <div class="sections">
-    {#each sections as section, index}
-      <TodoSection section={section} removeSelf={removeSection(index)} {index} />
-    {/each}
-  </div>
+	<button class="add-section" onclick={addSection}>+ Section</button>
+	<br />
+	<div class="sections">
+		{#each sections as section, index}
+			<TodoSection {section} removeSelf={removeSection(index)} {index} />
+		{/each}
+	</div>
 </div>
 
 <style>
@@ -60,29 +62,29 @@
 		color: white;
 	}
 
-  .add-section {
-    margin-top: 15px;
-    background: none;
+	.add-section {
+		margin-top: 15px;
+		background: none;
 
-    color: white;
-    border: 2px solid white;
-    border-radius: 10px;
-    padding: 5px 10px;
-    box-shadow: 0 0 10px white;
-  }
+		color: white;
+		border: 2px solid white;
+		border-radius: 10px;
+		padding: 5px 10px;
+		box-shadow: 0 0 10px white;
+	}
 
-  .add-section:hover {
-    background-color: #dbc5c533;
-  }
+	.add-section:hover {
+		background-color: #dbc5c533;
+	}
 
-  .sections {
-    width: 90%;
+	.sections {
+		width: 90%;
 
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
 
-    gap: 30px;
-    overflow-x: auto;
-  }
+		gap: 30px;
+		overflow-x: auto;
+	}
 </style>
