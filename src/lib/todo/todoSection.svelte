@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tick } from 'svelte';
 	import type { TaskSection } from '../../types';
 	import { marked } from 'marked';
 
@@ -8,17 +9,25 @@
 		index: number;
 	}
 
+  const tabsize = 2;
+
 	let { section, removeSelf, index }: TodoSectionProps = $props();
 	let titleEditing = $state(false);
 	let contentEditing = $state(false);
 
-	let textarea: HTMLElement | undefined = $state();
+	let textarea: HTMLTextAreaElement | undefined = $state();
 	let title: HTMLElement | undefined = $state();
 
-	function textareaOnKeyDown(event: KeyboardEvent) {
-		if (event.key == 'Tab') {
+	async function textareaOnKeyDown(event: KeyboardEvent) {
+		if (event.key == 'Tab' && textarea) {
 			event.preventDefault();
-			section.content += '   ';
+			
+      const selectionPlace = textarea.selectionStart;
+      section.content = section.content.slice(0, selectionPlace) + ' '.repeat(tabsize) + section.content.slice(selectionPlace);
+      // tick() to wait for HTML updates to run, then set cursor place
+      // otherwise, cursor will jump to the text end
+      await tick();
+      textarea.selectionEnd = selectionPlace + tabsize;
 		}
 
 		if ((event.ctrlKey && event.key == 'Enter') || event.key == 'Escape') {
