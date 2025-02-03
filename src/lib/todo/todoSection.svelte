@@ -5,13 +5,17 @@
 
 	interface TodoSectionProps {
 		section: TaskSection;
-		removeSelf: () => void;
 		index: number;
+		numSections: number;
+
+		removeSelf: () => void;
+		moveLeft: () => void;
+		moveRight: () => void;
 	}
 
-  const tabsize = 2;
+	const tabsize = 2;
 
-	let { section, removeSelf, index }: TodoSectionProps = $props();
+	let { section, removeSelf, index, numSections, moveLeft, moveRight }: TodoSectionProps = $props();
 	let titleEditing = $state(false);
 	let contentEditing = $state(false);
 
@@ -21,13 +25,16 @@
 	async function textareaOnKeyDown(event: KeyboardEvent) {
 		if (event.key == 'Tab' && textarea) {
 			event.preventDefault();
-			
-      const selectionPlace = textarea.selectionStart;
-      section.content = section.content.slice(0, selectionPlace) + ' '.repeat(tabsize) + section.content.slice(selectionPlace);
-      // tick() to wait for HTML updates to run, then set cursor place
-      // otherwise, cursor will jump to the text end
-      await tick();
-      textarea.selectionEnd = selectionPlace + tabsize;
+
+			const selectionPlace = textarea.selectionStart;
+			section.content =
+				section.content.slice(0, selectionPlace) +
+				' '.repeat(tabsize) +
+				section.content.slice(selectionPlace);
+			// tick() to wait for HTML updates to run, then set cursor place
+			// otherwise, cursor will jump to the text end
+			await tick();
+			textarea.selectionEnd = selectionPlace + tabsize;
 		}
 
 		if ((event.ctrlKey && event.key == 'Enter') || event.key == 'Escape') {
@@ -94,10 +101,16 @@
 				{section.sectionName}
 			</h3>
 		{/if}
-		<span class="extras">
+		<div class="extras">
+			{#if index !== 0}
+				<button onclick={moveLeft}>&lt;</button>
+			{/if}
+			{#if index < numSections - 1}
+				<button onclick={moveRight}>&gt;</button>
+			{/if}
 			<input bind:value={section.borderColor} type="color" />
 			<button class="remove-section" onclick={removeSelf}>X</button>
-		</span>
+		</div>
 	</div>
 	{#if contentEditing}
 		<textarea
@@ -135,11 +148,14 @@
 	.header {
 		width: 95%;
 		margin-bottom: 10px;
+		align-self: flex-start;
+		margin-left: 15px;
 	}
 
-	span.extras {
+	.extras {
 		float: right;
 		display: inline;
+		gap: 10px;
 	}
 
 	button.remove-section {
@@ -147,8 +163,6 @@
 		border: 1px solid red;
 		border-radius: 5px;
 		color: red;
-
-		margin-left: 10px;
 	}
 
 	button.remove-section:hover {
@@ -159,8 +173,6 @@
 		text-align: center;
 		margin-top: 0px;
 		display: inline;
-
-		margin-left: 20px;
 	}
 
 	.todo-content {

@@ -31,6 +31,20 @@
 			sections.splice(index, 1);
 		};
 	}
+
+  function moveSection(index: number, toLeft: boolean) {
+    return () => {
+      if (toLeft && index > 0) {
+        const temp = sections[index];
+        sections[index] = sections[index - 1];
+        sections[index - 1] = temp;
+      } else if (!toLeft && index < sections.length - 1) {
+        const temp = sections[index];
+        sections[index] = sections[index + 1];
+        sections[index + 1] = temp;
+      }
+    }
+  }
 </script>
 
 <div class="main">
@@ -38,9 +52,9 @@
 	<br />
 	<button class="add-section" onclick={addSection}>+ Section</button>
 	<br />
-	<div class="sections">
+	<div class={sections.length > 3 ? 'sections-large' : 'sections'}>
 		{#each sections as section, index}
-			<TodoSection {section} removeSelf={removeSection(index)} {index} />
+			<TodoSection {section} removeSelf={removeSection(index)} {index} numSections={sections.length} moveLeft={moveSection(index, true)} moveRight={moveSection(index, false)} />
 		{/each}
 	</div>
 </div>
@@ -83,7 +97,18 @@
 		display: flex;
 		flex-direction: row;
 		justify-content: center;
+    
+		gap: 30px;
+		overflow-x: auto;
+	}
 
+  .sections-large {
+		width: 90%;
+
+		display: flex;
+		flex-direction: row;
+		/* justify-content: center; */
+    
 		gap: 30px;
 		overflow-x: auto;
 	}
