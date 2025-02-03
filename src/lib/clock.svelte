@@ -7,7 +7,7 @@
 		now.toLocaleTimeString([], {
 			hour: '2-digit',
 			minute: '2-digit',
-			hour12: true,
+			hour12: true
 			// second: '2-digit'
 		})
 	);
@@ -34,19 +34,19 @@
 </div>
 
 <style>
-  p.time {
-    font-size: 4rem;
-  }
+	p.time {
+		font-size: 4rem;
+	}
 
-  p.date {
-    font-size: 2.5rem;
-  }
+	p.date {
+		font-size: 2.5rem;
+	}
 
 	div {
 		--lightteal: #299eec;
 
 		display: flex;
-    flex-flow: column;
+		flex-flow: column;
 		justify-content: flex-start;
 
 		color: var(--lightteal);
@@ -61,7 +61,7 @@
 		margin-top: 10px;
 	}
 
-  div > p {
-    margin: 5px;
-  }
+	div > p {
+		margin: 5px;
+	}
 </style>
