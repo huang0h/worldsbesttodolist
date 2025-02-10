@@ -108,7 +108,7 @@
 			{#if index < numSections - 1}
 				<button onclick={moveRight}>&gt;</button>
 			{/if}
-			<input bind:value={section.borderColor} type="color" />
+      <input bind:value={section.borderColor} type="color" />
 			<button class="remove-section" onclick={removeSelf}>X</button>
 		</div>
 	</div>
@@ -156,6 +156,12 @@
 		float: right;
 		display: inline;
 		gap: 10px;
+	}
+
+	input[type='color'] {
+		width: 40px;
+		height: 20px;
+		padding: 1px;
 	}
 
 	button.remove-section {

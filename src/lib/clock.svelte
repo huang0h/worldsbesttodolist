@@ -35,11 +35,11 @@
 
 <style>
 	p.time {
-		font-size: 4rem;
+		font-size: 1.8rem;
 	}
 
 	p.date {
-		font-size: 2.5rem;
+		font-size: 1.6rem;
 	}
 
 	div {
@@ -58,10 +58,10 @@
 			0 0 14px var(--lightteal),
 			0 0 18px #ffffff60;
 
-		margin-top: 10px;
+		margin-top: 15px;
 	}
 
 	div > p {
-		margin: 5px;
+		margin: 0 0 0 5px;
 	}
 </style>
