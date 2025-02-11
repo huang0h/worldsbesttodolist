@@ -7,6 +7,7 @@
 		section: TaskSection;
 		index: number;
 		numSections: number;
+		displayHorizontal: boolean;
 
 		removeSelf: () => void;
 		moveLeft: () => void;
@@ -15,7 +16,15 @@
 
 	const tabsize = 2;
 
-	let { section, removeSelf, index, numSections, moveLeft, moveRight }: TodoSectionProps = $props();
+	let {
+		section,
+		removeSelf,
+		index,
+		numSections,
+		moveLeft,
+		moveRight,
+		displayHorizontal
+	}: TodoSectionProps = $props();
 	let titleEditing = $state(false);
 	let contentEditing = $state(false);
 
@@ -83,7 +92,10 @@
 
 <svelte:window onkeydown={windowSelectSection} />
 
-<div class="todo-list" style="--coloring: {section.borderColor}">
+<div
+	class={['todo-list', displayHorizontal ? 'horizontal' : 'vertical']}
+	style="--coloring: {section.borderColor}"
+>
 	<div class="header">
 		{#if titleEditing}
 			<input
@@ -108,7 +120,7 @@
 			{#if index < numSections - 1}
 				<button onclick={moveRight}>&gt;</button>
 			{/if}
-      <input bind:value={section.borderColor} type="color" />
+			<input bind:value={section.borderColor} type="color" />
 			<button class="remove-section" onclick={removeSelf}>X</button>
 		</div>
 	</div>
@@ -118,19 +130,24 @@
 			bind:value={section.content}
 			onkeydown={textareaOnKeyDown}
 			onblur={textareaOnBlur}
+			class={[displayHorizontal ? 'horizontal' : 'vertical']}
 			style:display={contentEditing ? 'block' : 'none'}
 		></textarea>
 	{:else}
-		<div class="todo-content" onclick={onDivClick}>{@html marked(section.content)}</div>
+		<section
+			class={['todo-content', displayHorizontal ? 'horizontal' : 'vertical']}
+			onclick={onDivClick}
+		>
+			{@html marked(section.content)}
+		</section>
 	{/if}
 </div>
 
 <style>
 	.todo-list {
-		width: 25%;
-		min-height: 380px;
+		width: 80%;
+
 		padding: 10px;
-		margin: 25px 0;
 
 		border: 2px solid var(--coloring);
 		border-radius: 10px;
@@ -143,6 +160,15 @@
 		align-items: center;
 
 		flex-shrink: 0;
+	}
+
+	div.horizontal {
+		width: 25%;
+		min-height: 380px;
+	}
+
+	div.vertical {
+		min-height: 200px;
 	}
 
 	.header {
@@ -164,9 +190,21 @@
 		padding: 1px;
 	}
 
+	button {
+		background: none;
+		border: 1px solid;
+		border-color: white;
+		border-radius: 5px;
+		color: white;
+	}
+
+	button:hover {
+		background-color: #dbc5c555;
+	}
+
 	button.remove-section {
 		background: none;
-		border: 1px solid red;
+		border-color: red;
 		border-radius: 5px;
 		color: red;
 	}
@@ -195,11 +233,20 @@
 
 	textarea {
 		width: 90%;
-		min-height: 350px;
 		margin: 10px;
 		resize: vertical;
 
 		margin-bottom: 20px;
+	}
+
+	textarea.horizontal,
+	section.horizontal {
+		min-height: 350px;
+	}
+
+	textarea.vertical,
+	section.vertical {
+		min-height: 200px;
 	}
 
 	input {

@@ -6,6 +6,7 @@
 	import TodoSection from '$lib/todo/todoSection.svelte';
 
 	let sections: TaskSection[] = $state([]);
+	let displayHorizontal: boolean = $state(true);
 
 	// Set task state on mount, since localStorage doesn't exist in the server:
 	// wait for execution to occur on the browser
@@ -24,6 +25,10 @@
 			content: '',
 			borderColor: '#FFFFFF'
 		});
+	}
+
+	function switchOrientation() {
+		displayHorizontal = !displayHorizontal;
 	}
 
 	function removeSection(index: number) {
@@ -50,17 +55,29 @@
 <div class="main">
 	<Clock />
 	<br />
-	<button class="add-section" onclick={addSection}>+ Section</button>
+	<div class="buttons">
+		<button class="top-button" onclick={addSection}>+ Section</button>
+		<button class="top-button" onclick={switchOrientation}>
+			<span>{displayHorizontal ? '↕' : '↔'}</span>
+		</button>
+	</div>
 	<br />
-	<div class={sections.length > 3 ? 'sections-large' : 'sections'}>
+	<div
+		class={[
+			'sections',
+			sections.length <= 3 && 'sections-small',
+			displayHorizontal ? 'horizontal' : 'vertical'
+		]}
+	>
 		{#each sections as section, index}
 			<TodoSection
 				{section}
-				removeSelf={removeSection(index)}
 				{index}
 				numSections={sections.length}
+				{displayHorizontal}
 				moveLeft={moveSection(index, true)}
 				moveRight={moveSection(index, false)}
+				removeSelf={removeSection(index)}
 			/>
 		{/each}
 	</div>
@@ -83,40 +100,65 @@
 		color: white;
 	}
 
-	.add-section {
+	.buttons {
+		display: flex;
+		flex-direction: row;
+		align-content: center;
+		gap: 13px;
+
 		margin-top: 15px;
+	}
+
+	.buttons > button {
+		flex-grow: 0;
+	}
+
+	.buttons > button > span {
+		padding-bottom: 5px;
+	}
+
+	.top-button {
 		background: none;
 
 		color: white;
 		border: 2px solid white;
 		border-radius: 10px;
 		padding: 5px 10px;
-		box-shadow: 0 0 10px white;
+		box-shadow: 0 0 6px white;
+
+		min-width: 40px;
+		text-align: center;
+
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 	}
 
-	.add-section:hover {
+	.top-button:hover {
 		background-color: #dbc5c533;
 	}
 
 	.sections {
 		width: 90%;
+		gap: 30px;
+		margin-top: 25px;
 
 		display: flex;
-		flex-direction: row;
-		justify-content: center;
 
-		gap: 30px;
 		overflow-x: auto;
+		overflow-y: auto;
 	}
 
-	.sections-large {
-		width: 90%;
+	.sections-small {
+		justify-content: center;
+	}
 
-		display: flex;
+	.horizontal {
 		flex-direction: row;
-		/* justify-content: center; */
+	}
 
-		gap: 30px;
-		overflow-x: auto;
+	.vertical {
+		flex-direction: column;
+		align-items: center;
 	}
 </style>
