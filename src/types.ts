@@ -11,3 +11,4 @@ export interface TaskSection {
 }
 
 export const STORAGE_TASK_KEY = 'tasks';
+export const SETTINGS_KEY = 'settings';

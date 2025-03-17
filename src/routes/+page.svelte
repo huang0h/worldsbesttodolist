@@ -2,21 +2,29 @@
   import Clock from '$lib/clock.svelte';
   import { onMount } from 'svelte';
   import type { TaskSection } from '../types';
-  import { STORAGE_TASK_KEY } from '../types';
+  import { SETTINGS_KEY, STORAGE_TASK_KEY } from '../types';
   import TodoSection from '$lib/todo/todoSection.svelte';
+  import Settings from '$lib/settings.svelte';
 
   let sections: TaskSection[] = $state([]);
+  let settings: Record<string, any> = $state({});
   let displayHorizontal: boolean = $state(true);
+  let settingsModal: HTMLDialogElement | undefined = $state();
+  let sectionContainer: HTMLElement | undefined = $state();
 
   // Set task state on mount, since localStorage doesn't exist in the server:
   // wait for execution to occur on the browser
   onMount(() => {
     sections = JSON.parse(localStorage.getItem(STORAGE_TASK_KEY) || '[]');
+    settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
   });
 
   $effect(() => {
     localStorage.setItem(STORAGE_TASK_KEY, JSON.stringify(sections));
-    // console.log(localStorage.getItem(STORAGE_TASK_KEY));
+  });
+
+  $effect(() => {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
   });
 
   function addSection() {
@@ -25,10 +33,30 @@
       content: '',
       borderColor: '#FFFFFF'
     });
+
+    if (sectionContainer && sections.length >= 4) {
+      if (displayHorizontal) {
+        sectionContainer.scroll({ left: sectionContainer.scrollWidth, behavior: 'smooth' })
+      } else {
+
+      }
+    }
   }
 
   function switchOrientation() {
     displayHorizontal = !displayHorizontal;
+  }
+
+  function showSettingsModal() {
+    if (settingsModal) {
+      settingsModal.showModal();
+    }
+  }
+
+  function closeSettingsModal() {
+    if (settingsModal) {
+      settingsModal.close();
+    }
   }
 
   function removeSection(index: number) {
@@ -58,7 +86,10 @@
   <div class="buttons">
     <button class="top-button" onclick={addSection}>+ Section</button>
     <button class="top-button" onclick={switchOrientation}>
-      <span>{displayHorizontal ? '↕' : '↔'}</span>
+      <span style:padding-bottom='5px'>{displayHorizontal ? '↕' : '↔'}</span>
+    </button>
+    <button class="top-button" onclick={showSettingsModal}>
+      <span>⚙</span>
     </button>
   </div>
   <br />
@@ -68,6 +99,7 @@
       sections.length <= 3 && 'sections-small',
       displayHorizontal ? 'horizontal' : 'vertical'
     ]}
+    bind:this={sectionContainer}
   >
     {#each sections as section, index}
       <TodoSection
@@ -80,6 +112,9 @@
         removeSelf={removeSection(index)}
       />
     {/each}
+    <dialog bind:this={settingsModal}>
+      <Settings {closeSettingsModal} {settings} />
+    </dialog>
   </div>
 </div>
 
@@ -112,11 +147,6 @@
   .buttons > button {
     flex-grow: 0;
   }
-
-  .buttons > button > span {
-    padding-bottom: 5px;
-  }
-
   .top-button {
     background: none;
 
@@ -160,5 +190,16 @@
   .vertical {
     flex-direction: column;
     align-items: center;
+  }
+
+  dialog {
+    border: 2px solid rgb(0, 157, 255);
+    border-radius: 10px;
+    box-shadow: 0 0 40px rgb(0, 191, 255);
+  }
+
+  dialog::backdrop {
+    background-color: #1d1d1d;
+    opacity: 0.6;
   }
 </style>
