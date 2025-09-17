@@ -16,7 +16,7 @@
 
   $effect(() => {
     localStorage.setItem(STORAGE_TASK_KEY, JSON.stringify(sections));
-    // console.log(localStorage.getItem(STORAGE_TASK_KEY));
+    console.log(localStorage.getItem(STORAGE_TASK_KEY));
   });
 
   function addSection() {
@@ -91,7 +91,7 @@
   }
 
   .main {
-    margin-top: -20px;
+    /* margin-top: -20px; */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -107,6 +107,7 @@
     gap: 13px;
 
     margin-top: 15px;
+    margin-bottom: -5px;
   }
 
   .buttons > button {
@@ -155,6 +156,7 @@
 
   .horizontal {
     flex-direction: row;
+    padding-bottom: 20px;
   }
 
   .vertical {

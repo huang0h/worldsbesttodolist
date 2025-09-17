@@ -33,11 +33,11 @@
 
 <style>
   p.time {
-    font-size: 1.8rem;
+    font-size: 1.9rem;
   }
 
   p.date {
-    font-size: 1.6rem;
+    font-size: 1.4rem;
   }
 
   div {
@@ -57,6 +57,7 @@
       0 0 18px #ffffff60;
 
     margin-top: 15px;
+    margin-bottom: 15px;
   }
 
   div > p {

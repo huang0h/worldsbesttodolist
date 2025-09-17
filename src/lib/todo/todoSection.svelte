@@ -29,7 +29,9 @@
   let contentEditing = $state(false);
 
   let textarea: HTMLTextAreaElement | undefined = $state();
+  let textareaEditValue: string =  $state(section.content);
   let title: HTMLElement | undefined = $state();
+  let titleEditValue: string = $state(section.sectionName);
 
   async function textareaOnKeyDown(event: KeyboardEvent) {
     if (event.key == 'Tab' && textarea) {
@@ -49,22 +51,26 @@
     if ((event.ctrlKey && event.key == 'Enter') || event.key == 'Escape') {
       event.preventDefault();
       contentEditing = false;
+      section.content = textareaEditValue
     }
   }
 
   function textareaOnBlur() {
     contentEditing = false;
+    section.content = textareaEditValue;
   }
 
   function titleOnKeyDown(event: KeyboardEvent) {
-    if ((event.ctrlKey && event.key == 'Enter') || event.key == 'Escape') {
+    if (event.key == 'Enter' || event.key == 'Escape') {
       event.preventDefault();
       titleEditing = false;
+      section.sectionName = titleEditValue;
     }
   }
 
   function titleOnBlur() {
     titleEditing = false;
+    section.sectionName = titleEditValue;
   }
 
   function onDivClick() {
@@ -100,7 +106,7 @@
     {#if titleEditing}
       <input
         bind:this={title}
-        bind:value={section.sectionName}
+        bind:value={titleEditValue}
         onkeydown={titleOnKeyDown}
         onblur={titleOnBlur}
       />
@@ -127,7 +133,7 @@
   {#if contentEditing}
     <textarea
       bind:this={textarea}
-      bind:value={section.content}
+      bind:value={textareaEditValue}
       onkeydown={textareaOnKeyDown}
       onblur={textareaOnBlur}
       class={[displayHorizontal ? 'horizontal' : 'vertical']}
@@ -210,7 +216,7 @@
   }
 
   button.remove-section:hover {
-    background-color: #ff6e6e7a;
+    background-color: #ff57577e;
   }
 
   h3 {
